@@ -137,3 +137,8 @@ dmypy.json
 /.editorconfig
 
 /postgres_db/
+
+#папка статик это чисто мое 
+app/static/
+app/static/script.js
+app/static/index.html

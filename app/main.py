@@ -30,13 +30,7 @@ app.add_middleware(
 
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
 
-@app.get("/")
-async def root():
-    try:
-        return FileResponse("app/static/index.html")
-    except RuntimeError:
-         # Обработка, если файл не найден (на всякий случай)
-         raise HTTPException(status_code=404, detail="Index.html не найден")
+
 
 
 
