@@ -142,3 +142,4 @@ dmypy.json
 app/static/
 app/static/script.js
 app/static/index.html
+app/static/script.js
