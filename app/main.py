@@ -2,9 +2,7 @@ import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from fastapi.exceptions import HTTPException
-from fastapi.responses import FileResponse
-
+from api.endpoints import router
 
 app = FastAPI(
     title="Telegram",
@@ -30,7 +28,7 @@ app.add_middleware(
 
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
 
-
+app .include_router(router=router)
 
 
 

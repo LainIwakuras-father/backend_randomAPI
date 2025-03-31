@@ -2,5 +2,5 @@
 
 
 
-def choice_winner():
+async def choice_winner():
     pass
