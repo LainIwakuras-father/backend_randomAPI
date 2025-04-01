@@ -15,10 +15,10 @@ async def index():
     return {"message": "Hello World"}
 
 @handle_http_exceptions
-@router.post("/get_winners",
-             response_model=RaffleRequest)
-async def get_winners(request: RaffleRequest):
-    return await choice_winner(request)
+@router.post("/get_winners")
+async def get_winners(post_url: str):
+    win =await choice_winner(post_url)
+    return {"Победитель конкурса": win}
 
 @handle_http_exceptions
 @router.post("/reroll_winner", response_model=RaffleResponse)

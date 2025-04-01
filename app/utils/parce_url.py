@@ -7,6 +7,6 @@ def  parse_vk_url(url):
     match_post= re.search(r'wall(-?\d+)_(\d+)', url)
     if match_post:
          group_id, item_id = match_post.groups()
-         return int(group_id), int(item_id)
+         return group_id, item_id
     raise ValueError(f"Unsupported VK URL format: {url}")
 

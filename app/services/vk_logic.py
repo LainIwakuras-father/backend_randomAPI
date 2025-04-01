@@ -1,6 +1,8 @@
 
 import logging
 import asyncio
+import random
+from typing import List
 import aiohttp
 import re
 import os
@@ -11,13 +13,13 @@ from dotenv import load_dotenv
 load_dotenv()
 ## использовать либо тот либо тот токен для работы с группой и пользователями
 VK_TOKEN = os.getenv('VK_TOKEN','')
-owner_id = "-228217476"
-owner_ids = "228217476" #для is.Member нужно без минуса
-item_id = "38"
+owner_id = "-211669963"
+owner_ids = "211669963" #для is.Member нужно без минуса
+item_id = "1325"
 group_screen_name = "byskaza"
 user_ids = set()
 
-#https://vk.com/wall-228217476_68  https://vk.com/wall-228217476_38вот такую ссылку надо парсить
+#https://vk.com/wall-228217476_68  https://vk.com/wall-228217476_38  https://vk.com/wall-211669963_1325вот такую ссылку надо парсить
 # перенеси в другой файл по хорошему!
 
 
@@ -154,11 +156,18 @@ class api_VK_client:
     
     
     @staticmethod     
-    async def get_user_info_by_id():
+    async def get_user_info_by_id(user_ids:List[int] ,vk_token = VK_TOKEN):
         """
         Возращает Имю и Фамилию пользователя по его айди
         """
-        pass
+        params = {
+            "user_ids": ','.join(map(str, user_ids)),
+            'fields': 'first_name,last_name', #указываем поля которые хотим получить из ответа
+            "access_token": vk_token,
+            "v": "5.199",
+        }
+        result = await api_VK_client.make_request("users.get",params)
+        return [ ' '.join([name1['first_name'], name2['last_name']])  for  name1, name2 in  zip(result['response'], result['response'])]
 
 
 #testing
@@ -169,6 +178,10 @@ async def main():
     logging.info(f'Лайкнули пост: {likers}')
     checker = await api_VK_client.check_subscriber(owner_ids,likers)
     logging.info(f'Подписчики группы из лайкнувших пост: {checker}')
+    list_name = await api_VK_client.get_user_info_by_id(checker)
+    logging.info(f'Информация о подписчиках группы из лайкнувших пост: {list_name}')
+    winner = random.choice(list_name)
+    logging.info(f'Победитель конкурса: {winner}')
 
 if __name__ == '__main__':
     asyncio.run(main())
