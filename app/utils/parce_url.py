@@ -5,10 +5,11 @@ import re
 
 class VKUrlParser:
      @staticmethod
-     def  parse_vk_post(url):
+     def  parse_vk_post(url:str) -> tuple[int]:
           '''
-          Парсит ссылку на пост ВКонтакте и возвращает айди сообщества и айди поста.
+          Парсит ссылку на пост ВКонтакте и возвращает кортеж айди сообщества и айди поста.
           '''
+          
           match_post= re.search(r'wall(-?\d+)_(\d+)', url)
           if match_post:
                group_id, item_id = match_post.groups()

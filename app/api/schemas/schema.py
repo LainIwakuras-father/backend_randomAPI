@@ -1,4 +1,4 @@
-from pydantic import BaseModel, HttpUrl
+from pydantic import BaseModel, HttpUrl, Field
 from typing import List, Optional
 
 class Criteria(BaseModel):
@@ -9,28 +9,23 @@ class Criteria(BaseModel):
 
 #Запрос на розыгрыш
 class RaffleRequest(BaseModel):
-    post_url: HttpUrl
+    post_url: HttpUrl 
     raffle_name: Optional[str] = None
-    count_winners: int
+    count_winners: int = Field(ge=1)
     criteria: Criteria
     required_group: List[HttpUrl]=[]
     check_own_group: bool = False
     
     
-
-
-
 class Winner(BaseModel):
-    user_id: int
     first_name: str
     last_name: str
     profile_url: str
 
 #Ответ на запрос о розыгрыше
 class RaffleResponse(BaseModel):
+    msg: str = "Конкурс успешно проведен!"
     winners: List[Winner]
-    total_participants: int
-    message: Optional[str] = None
 
 
 # class RerollRequest(BaseModel):

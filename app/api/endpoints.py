@@ -3,7 +3,7 @@ from fastapi import APIRouter, HTTPException
 
 from api.schemas.schema import RaffleRequest, RaffleResponse
 from utils.exceptions import handle_http_exceptions
-from services.random_logic import choice_winner
+from services.random_logic import RandomService
 from fastapi.responses import FileResponse
 
 
@@ -26,13 +26,11 @@ async def index():
     response_model=RaffleResponse
 )
 async def get_winners(raffle:RaffleRequest):
-    win =await choice_winner(raffle)
-    return RaffleResponse(winner=win)
 
-# @handle_http_exceptions
-# @router.post(
-#     "/reroll_winner",
-#     response_model=RaffleResponse
-# )
-# async def reroll_winner(request: RerollRequest):
-#     return await choice_winner(request)
+    win =await RandomService.choice_winner(
+                                post_url=str(raffle.post_url),
+                                criteria=raffle.criteria,
+                                count_winners=raffle.count_winners,
+                                check_own_group=raffle.check_own_group,
+                                )
+    return RaffleResponse(winners=win)

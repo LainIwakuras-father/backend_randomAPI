@@ -4,6 +4,7 @@ import asyncio
 import random
 from typing import List
 import aiohttp
+from api.schemas.schema import Winner
 from utils.exceptions import VKAPIError
 from config import VK_TOKEN
 
@@ -47,10 +48,10 @@ class api_VK_client:
 
     @staticmethod
     async def get_user_ids_by_likes(
-        owner_id,
-        item_id,
+        owner_id:str,
+        item_id:str,
         vk_token = VK_TOKEN
-        ):
+        )->list[int]:
         """
         Возращает список айди пользователей, 
         которые лайкнули  пост Вконтанке
@@ -63,6 +64,7 @@ class api_VK_client:
             "v": "5.199", 
         }
         result = await api_VK_client.make_request("likes.getList",params)
+        logging.info('посмотрел лайки')
         return result['response']['items']
 
 
@@ -70,10 +72,10 @@ class api_VK_client:
             
     @staticmethod      
     async def get_user_ids_by_repost(
-        owner_id,
-        post_id,
+        owner_id:str,
+        post_id:str,
         vk_token=VK_TOKEN
-    ):
+    )->list[int]:
         """
         Возращает список айди пользователей, 
         которые репостнули  пост Вконтанке
@@ -85,6 +87,7 @@ class api_VK_client:
             "v": "5.199",
         }
         result = await api_VK_client.make_request("wall.getReposts",params)
+        logging.info('посмотрел репостеров')
         return [user['from_id'] for user in result['response']['items']]
             
          
@@ -92,9 +95,9 @@ class api_VK_client:
     async def get_user_ids_by_comment(
         owner_id:str,
         post_id:str,
-        count:int,
+        count:int = 100,
         vk_token=VK_TOKEN
-        ):
+        )->list[int]:
         """
 
         Возращает список айди пользователей, 
@@ -108,7 +111,7 @@ class api_VK_client:
             'count': count,
         }
         result = await api_VK_client.make_request("wall.getComments",params)
-                    
+        logging.info('посмотрел комментаторов')           
         return [user['from_id'] for user in result['response']['items']]
             
               
@@ -128,6 +131,7 @@ class api_VK_client:
             "v": "5.199",
         }
         res = await api_VK_client.make_request("groups.isMember",params)
+        logging.info(f"Проверка подписчиков")
         return [user['user_id'] for user in res['response'] if user['member'] == 1]
     
     
@@ -135,7 +139,7 @@ class api_VK_client:
     async def get_user_info_by_id(
         user_ids:List[int] 
         ,vk_token = VK_TOKEN
-        ):
+        )->List[Winner]:
         """
         Возращает Имю и Фамилию пользователя по его айди
         """
@@ -146,6 +150,14 @@ class api_VK_client:
             "v": "5.199",
         }
         result = await api_VK_client.make_request("users.get",params)
-        return [ ' '.join([name1['first_name'], name2['last_name']])  for  name1, name2 in  zip(result['response'], result['response'])]
-
+        logging.info('получил информацию о подписчиках группы')
+        list_winer = [
+            Winner(
+                first_name=user['first_name'],
+                last_name=user['last_name'],
+                profile_url=f"https://vk.com/id{user['id']}"
+                ) 
+                for user in result['response']
+        ]
+        return list_winer
 
