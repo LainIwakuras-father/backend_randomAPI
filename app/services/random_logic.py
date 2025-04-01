@@ -11,6 +11,7 @@ async def choice_winner(
 ) -> str:
     owner_id, item_id  = parse_vk_url(post_url)
     likers = await api_VK_client.get_user_ids_by_likes(owner_id,item_id)
+    
     logging.info(f'Лайкнули пост: {likers}')
     checker = await api_VK_client.check_subscriber(owner_id[1:],likers)
     logging.info(f'Подписчики группы из лайкнувших пост: {checker}')

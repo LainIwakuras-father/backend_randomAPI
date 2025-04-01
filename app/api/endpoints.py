@@ -4,15 +4,16 @@ from fastapi import APIRouter
 from api.schemas.schema import RaffleRequest, RaffleResponse, RerollRequest
 from utils.exceptions import handle_http_exceptions
 from services.random_logic import choice_winner
+from fastapi.responses import FileResponse
 
 
 
 
 router = APIRouter()
 
-@router.get('/')
-async def index():
-    return {"message": "Hello World"}
+# @router.get('/')
+# async def index():
+#     return FileResponse("app/static/index.html")
 
 @handle_http_exceptions
 @router.post("/get_winners")

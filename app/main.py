@@ -1,3 +1,4 @@
+import os
 import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -25,8 +26,8 @@ app.add_middleware(
     allow_headers=["*"]
 )
 
-
-app.mount("/static", StaticFiles(directory="app/static"), name="static")
+path = os.path.join(os.path.dirname(__file__), "static")#ПОЛНЫЙ ПУТЬ К ПАПКЕ STATIC
+app.mount("/", StaticFiles(directory=path, html=True), name="static")
 
 app .include_router(router=router)
 
