@@ -11,13 +11,7 @@ from fastapi.responses import FileResponse
 
 router = APIRouter()
 
-@router.get('/')
-async def index():
-    try:
-        return FileResponse('static/index.html')
-    except RuntimeError:
-         # Обработка, если файл не найден (на всякий случай)
-         raise HTTPException(status_code=404, detail="Index.html не найден")
+
 
 @handle_http_exceptions
 @router.post(

@@ -5,6 +5,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from api.endpoints import router
+from config import loggerConfig
 
 app = FastAPI(
     title="Telegram",
@@ -28,14 +29,13 @@ app = FastAPI(
 #     allow_headers=["*"]
 # )
 
-path = os.path.join(os.path.dirname(__file__), "static")#ПОЛНЫЙ ПУТЬ К ПАПКЕ STATIC
-app.mount("/static", StaticFiles(directory='static'), name="static") #ОБЪЕДИНЕНИЕ ДВУХ ПАПОК видет папку статик и сервер яток щас это понял
 
 app.include_router(router=router)
 
 
 
 if __name__ == "__main__":
-    logging.basicConfig(level=logging.INFO,)
+    logging.basicConfig(level=loggerConfig.level,format=loggerConfig.format)
+    logging.info("Server is running....")
     uvicorn.run(app, host="127.0.0.1", port=8000)
     
