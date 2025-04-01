@@ -139,7 +139,7 @@ dmypy.json
 /postgres_db/
 
 #папка статик это чисто мое 
-app/static/
+static/
 app/static/script.js
 app/static/index.html
 app/static/script.js

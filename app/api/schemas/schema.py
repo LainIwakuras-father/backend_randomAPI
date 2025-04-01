@@ -15,7 +15,8 @@ class RaffleRequest(BaseModel):
     criteria: Criteria
     required_group: List[HttpUrl]=[]
     check_own_group: bool = False
-    own_group_id: Optional[str] = None
+    
+    
 
 
 
@@ -32,7 +33,7 @@ class RaffleResponse(BaseModel):
     message: Optional[str] = None
 
 
-class RerollRequest(BaseModel):
-    contest_data: RaffleRequest # Исходные данные конкурса
-    current_winners: List[Winner] # Текущий список победителей
-    winner_to_reroll_id: int # ID пользователя, которого перевыбираем
+# class RerollRequest(BaseModel):
+#     contest_data: RaffleRequest # Исходные данные конкурса
+#     current_winners: List[Winner] # Текущий список победителей
+#     winner_to_reroll_id: int # ID пользователя, которого перевыбираем

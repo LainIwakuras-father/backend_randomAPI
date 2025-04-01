@@ -4,47 +4,15 @@ import asyncio
 import random
 from typing import List
 import aiohttp
-import re
-import os
-from dotenv import load_dotenv
-# from app.config import VK_TOKEN
-
-#ID СООБЩЕСТВА очень важен минус в начале или название 
-load_dotenv()
-## использовать либо тот либо тот токен для работы с группой и пользователями
-VK_TOKEN = os.getenv('VK_TOKEN','')
-owner_id = "-211669963"
-owner_ids = "211669963" #для is.Member нужно без минуса
-item_id = "1325"
-group_screen_name = "byskaza"
-user_ids = set()
-
-#https://vk.com/wall-228217476_68  https://vk.com/wall-228217476_38  https://vk.com/wall-211669963_1325вот такую ссылку надо парсить
-# перенеси в другой файл по хорошему!
-
-
-class VKAPIError(Exception):
-    """Custom exception for VK API errors."""
-    pass
-
-
-
-def  parse_vk_url(url):
-    '''
-    Парсит ссылку на пост ВКонтакте и возвращает айди сообщества и айди поста.
-    '''
-    match_post= re.search(r'wall(-?\d+)_(\d+)', url)
-    if match_post:
-         group_id, item_id = match_post.groups()
-         return int(group_id), int(item_id)
-    raise ValueError(f"Unsupported VK URL format: {url}")
+from utils.exceptions import VKAPIError
+from config import VK_TOKEN
 
 
 
 class api_VK_client:
      
     @staticmethod    
-    async def make_request(method, params):
+    async def make_request(method:str, params):
         async with aiohttp.ClientSession() as session:
             try:
                 async with session.get(f'https://api.vk.com/method/{method}', params=params) as response:
@@ -62,7 +30,7 @@ class api_VK_client:
             
 
     @staticmethod
-    async def get_club_by_id(group_screen_name , vk_token = VK_TOKEN):
+    async def get_club_by_id(group_screen_name:str , vk_token:str = VK_TOKEN):
         """
         Возвращает айди группы по её ссылке c названием
         """
@@ -72,14 +40,17 @@ class api_VK_client:
             "v": "5.199",
             
         }
-
         res =  await api_VK_client.make_request("groups.getById",params)
         return res['response']['groups'][0]['id']
 
 
 
     @staticmethod
-    async def get_user_ids_by_likes(owner_id,item_id, vk_token = VK_TOKEN):
+    async def get_user_ids_by_likes(
+        owner_id,
+        item_id,
+        vk_token = VK_TOKEN
+        ):
         """
         Возращает список айди пользователей, 
         которые лайкнули  пост Вконтанке
@@ -89,22 +60,20 @@ class api_VK_client:
             "owner_id": owner_id,
             'item_id': item_id,
             "access_token": vk_token,
-            "v": "5.199",
-            
+            "v": "5.199", 
         }
-        
         result = await api_VK_client.make_request("likes.getList",params)
         return result['response']['items']
 
 
 
-
-        
-        
-
             
     @staticmethod      
-    async def get_user_ids_by_repost(owner_id,post_id,vk_token=VK_TOKEN):
+    async def get_user_ids_by_repost(
+        owner_id,
+        post_id,
+        vk_token=VK_TOKEN
+    ):
         """
         Возращает список айди пользователей, 
         которые репостнули  пост Вконтанке
@@ -120,14 +89,17 @@ class api_VK_client:
             
          
     @staticmethod
-    async def get_user_ids_by_comment(owner_id,post_id,count,vk_token=VK_TOKEN):
+    async def get_user_ids_by_comment(
+        owner_id:str,
+        post_id:str,
+        count:int,
+        vk_token=VK_TOKEN
+        ):
         """
+
         Возращает список айди пользователей, 
         которые комментировали  пост Вконтанке
         """
-        #надо сделать логику парсинга ссылки на пост и присваивать айди вводимым аргументом функции
-        # 'group_id': group_screen_name,  'owner_id': owner_id,
-        #owner_id и items_id это айди сообщества и айди поста соответственно так как от пользователя мы получаем ссылку на пост мы их тока парсим из URL
         params = {
             "owner_id": owner_id,
             'post_id': post_id,
@@ -141,13 +113,17 @@ class api_VK_client:
             
               
     @staticmethod
-    async def check_subscriber(group_id,user_ids,vk_token=VK_TOKEN):
+    async def check_subscriber(
+        group_id,
+        user_ids,
+        vk_token=VK_TOKEN
+        ):
         '''
         Проверяет, является ли пользователь подписчиком группы или нет 
         '''
         params = {
             'group_id': group_id,
-            'user_ids': ','.join(map(str, user_ids)), # преобразование списка в строку через запятую !!!! оказыается
+            'user_ids': ','.join(map(str, user_ids)), 
             "access_token": vk_token,
             "v": "5.199",
         }
@@ -156,7 +132,10 @@ class api_VK_client:
     
     
     @staticmethod     
-    async def get_user_info_by_id(user_ids:List[int] ,vk_token = VK_TOKEN):
+    async def get_user_info_by_id(
+        user_ids:List[int] 
+        ,vk_token = VK_TOKEN
+        ):
         """
         Возращает Имю и Фамилию пользователя по его айди
         """
@@ -169,20 +148,4 @@ class api_VK_client:
         result = await api_VK_client.make_request("users.get",params)
         return [ ' '.join([name1['first_name'], name2['last_name']])  for  name1, name2 in  zip(result['response'], result['response'])]
 
-
-#testing
-async def main():
-    logging.basicConfig(level=logging.INFO,)
-    logging.info('ЗАПУСКАЮ...')
-    likers = await api_VK_client.get_user_ids_by_likes(owner_id,item_id)
-    logging.info(f'Лайкнули пост: {likers}')
-    checker = await api_VK_client.check_subscriber(owner_ids,likers)
-    logging.info(f'Подписчики группы из лайкнувших пост: {checker}')
-    list_name = await api_VK_client.get_user_info_by_id(checker)
-    logging.info(f'Информация о подписчиках группы из лайкнувших пост: {list_name}')
-    winner = random.choice(list_name)
-    logging.info(f'Победитель конкурса: {winner}')
-
-if __name__ == '__main__':
-    asyncio.run(main())
 
