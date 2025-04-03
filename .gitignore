@@ -143,3 +143,4 @@ static/
 app/static/script.js
 app/static/index.html
 app/static/script.js
+test/test_main.py

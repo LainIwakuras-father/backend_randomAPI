@@ -122,7 +122,7 @@ class api_VK_client:
         vk_token=VK_TOKEN
         ):
         '''
-        Проверяет, является ли пользователь подписчиком группы или нет 
+        Проверяет, является ли пользователи подписчиком группы или нет 
         '''
         params = {
             'group_id': group_id,
@@ -160,4 +160,6 @@ class api_VK_client:
                 for user in result['response']
         ]
         return list_winer
+
+
 

@@ -18,10 +18,15 @@ class VKUrlParser:
      
      @staticmethod
      def parse_vk_groups(urls):
+          pattern = r'^(?:https?://)?vk.com/(?:club)?([a-zA-Z0-9_]+)'
           for url in urls:
-               match = re.search(r'club([^/]+)', url)
+               match = re.match(pattern, url)
                if match:
                     group_name = match.group(1)
                     yield group_name
                else:
                     raise ValueError(f"Unsupported VK URL format: {url}")
+               
+
+
+

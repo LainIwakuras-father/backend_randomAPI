@@ -5,7 +5,7 @@ from fastapi import HTTPException
 from utils.exceptions import InvalidURLException
 from services.vk_logic import api_VK_client
 from utils.parce_url import  VKUrlParser
-from api.schemas.schema import Winner,Criteria
+from api.schemas.schema import Criteria
 
 
 class RandomService:
@@ -21,9 +21,16 @@ class RandomService:
             check_own_group: bool = False,
     ):  
         #получение айди группы и поста из ссылки на пост ВКонтакте
-        group_id, item_id  = VKUrlParser.parse_vk_post(post_url)
-        logging.info(f'Получили айди группы и поста: {group_id},{item_id}')
+        try:
+            group_id, item_id  = VKUrlParser.parse_vk_post(post_url)
+            logging.info(f'Получили айди группы и поста: {group_id},{item_id}')
+        except ValueError:
+            HTTPException(422, "твоя ссылка не валидна")
 
+
+
+
+    
         #логика выборки критериев
         if criteria.likes and criteria.reposts and criteria.comments:
             user_ids = set()
@@ -45,20 +52,29 @@ class RandomService:
             user_ids = await api_VK_client.get_user_ids_by_comment(group_id,item_id)
         else:
             raise HTTPException(status_code=422,detail="Неверная комбинация критериев. Выберите хотя бы один критерий.")
-        # проверка на подписку на  группу
-        if check_own_group:
-            checker = await api_VK_client.check_subscriber(group_id[1:],user_ids)
-            logging.info(f'Подписчики группы из активных пост: {checker}')
-            user_ids = checker
-
-        # #проверка на подписку на специфические  группы   
-        # if required_group:
-        #     list_groups_ids = [VKUrlParser.parse_vk_post(group) for group in required_group]
-        #     tample_user_ids = set()
-        #     for group in list_groups_ids:
-        #         checker = await api_VK_client.check_subscriber(group,user_ids)
         
+
+            # проверка на подписку на  группу
+        if check_own_group:
+                checker = await api_VK_client.check_subscriber(group_id[1:],user_ids)
+                logging.info(f'Подписчики группы из активных пост: {checker}')
+                user_ids = checker
+
+        #проверка на подписку на специфические  группы   
+        if required_group:
+            try:
+                #обработать вывод ошибки неправильной ссылки группы  и группы не существует
+                list_groups_ids = list(map(VKUrlParser.parse_vk_groups,required_group))
+                for group in list_groups_ids:
+                    user_ids = await api_VK_client.check_subscriber(group,user_ids)
+            except ValueError:
+                HTTPException(422, "твои ссылки не валидна")
+            except InvalidURLException:
+                HTTPException(404, "такой группы походу не существует :( ")
+
+
         logging.info(f'Айди пользователей которые удовлетворяют критериям: {user_ids}')
+        
         
         # логика рандомайзера     
         participants = random.sample(user_ids, k=count_winners)
