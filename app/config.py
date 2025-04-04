@@ -1,12 +1,12 @@
-
-from dotenv import load_dotenv
-import os
 import logging
+import os
 import sys
 
+from dotenv import load_dotenv
+
 load_dotenv()
-VK_TOKEN = os.getenv('VK_TOKEN')
-WEBAPP_URL = os.getenv('WEBAPP_URL')
+VK_TOKEN = os.getenv("VK_TOKEN")
+WEBAPP_URL = os.getenv("WEBAPP_URL")
 
 
 from pydantic import BaseModel
@@ -22,10 +22,3 @@ class LoggerConfig(BaseModel):
 
 
 loggerConfig = LoggerConfig()
-
-
-
-
-
-
-

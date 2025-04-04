@@ -1,18 +1,14 @@
-import os
 import logging
+import os
+
 import uvicorn
+from api.endpoints import router
+from config import loggerConfig
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from api.endpoints import router
-from config import loggerConfig
 
-app = FastAPI(
-    title="Telegram",
-    description="Telegram",
-    version="0.0.1",
-    debug=True
-)
+app = FastAPI(title="Telegram", description="Telegram", version="0.0.1")
 
 # origins = [
 #     "https://web.telegram.org",
@@ -33,9 +29,7 @@ app = FastAPI(
 app.include_router(router=router)
 
 
-
 if __name__ == "__main__":
-    logging.basicConfig(level=loggerConfig.level,format=loggerConfig.format)
+    logging.basicConfig(level=loggerConfig.level, format=loggerConfig.format)
     logging.info("Server is running....")
     uvicorn.run(app, host="127.0.0.1", port=8000)
-    

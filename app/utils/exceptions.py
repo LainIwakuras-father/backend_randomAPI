@@ -1,16 +1,18 @@
 import logging
 from functools import wraps
+
 from fastapi import HTTPException, status
-
-
 
 
 class VKAPIError(Exception):
     """Custom exception for VK API errors."""
+
     pass
+
 
 class InvalidURLException(Exception):
     """Custom exception for invalid URLs."""
+
     pass
 
 
