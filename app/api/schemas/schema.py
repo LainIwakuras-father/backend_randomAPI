@@ -13,11 +13,10 @@ class Criteria(BaseModel):
 class RaffleRequest(BaseModel):
     post_url: HttpUrl
     raffle_name: Optional[str] = None
-    count_winners: int = Field(ge=1)
     criteria: Criteria
-    required_group: List[HttpUrl] = []
+    required_groups: List[HttpUrl] = []
     check_own_group: bool = False
-
+    count_winners: int = Field(ge=1)
 
 class Winner(BaseModel):
     first_name: str
@@ -29,6 +28,7 @@ class Winner(BaseModel):
 class RaffleResponse(BaseModel):
     msg: str = "Конкурс успешно проведен!"
     winners: List[Winner]
+    # total_participants: int
 
 
 # class RerollRequest(BaseModel):
