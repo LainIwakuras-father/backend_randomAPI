@@ -16,7 +16,7 @@ async def get_winners(raffle: RaffleRequest):
         criteria=raffle.criteria,
         count_winners=raffle.count_winners,
         check_own_group=raffle.check_own_group,
-        required_group=raffle.required_group,
+        required_group=raffle.required_groups,
     )
     return RaffleResponse(winners=win)
 

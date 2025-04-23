@@ -1,23 +1,18 @@
-FROM python:3.11-slim-buster
+FROM python:3.12-slim
 
-ENV PYTHONUNBUFFERED=1 \
-    POETRY_VERSION=1.8.2 \
-    POETRY_VIRTUALENVS_CREATE=false
+ENV PYTHONDONTWRITEBYTECODE=1
 
-# Устанавливаем системные зависимости
-RUN apt-get update && apt-get install -y \
-    libpq-dev \
-    gcc \
-    && rm -rf /var/lib/apt/lists/*
+ENV PYTHONUNBUFFERED=1 
 
-COPY pyproject.toml poetry.lock ./
+LABEL "Creator"="Uriy Dolewsky"
 
-RUN pip install poetry && poetry install --only main --no-root --no-interaction --no-ansi
-
-ENV PATH="/root/.local/bin:${PATH}"
 
 WORKDIR /app
+COPY requirements.txt /app/requirements.txt
+
+RUN pip install --no-cache-dir --upgrade -r /app/requirements.txt
 
 COPY . .
 
-# CMD ["python", "main.py"]
+# CMD [ "python", "main.py" ]
+
